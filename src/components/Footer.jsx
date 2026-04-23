@@ -15,10 +15,10 @@ function Footer() {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em]">Contact</h3>
           <div className="space-y-3 text-sm text-[#6f5160]">
             <p className="flex items-center gap-2">
-              <FiPhone /> +91 98765 43210
+              <FiPhone /> +91 90153 42951
             </p>
             <p className="flex items-center gap-2">
-              <FiMail /> care@elantraa.com
+              <FiMail /> elantraa.01@gmail.com
             </p>
           </div>
         </div>
@@ -33,7 +33,7 @@ function Footer() {
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em]">Follow</h3>
           <div className="flex gap-3 text-xl text-brand">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+            <a href="https://www.instagram.com/_kajal__bhardwaj_" target="_blank" rel="noreferrer">
               <FiInstagram />
             </a>
             <a href="https://twitter.com" target="_blank" rel="noreferrer">

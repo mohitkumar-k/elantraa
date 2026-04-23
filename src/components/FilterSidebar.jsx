@@ -12,10 +12,10 @@ function FilterSidebar({ filters, setFilters, colors, fabrics, maxAvailablePrice
   }
 
   return (
-    <aside className="glass-card h-fit p-5">
-      <div className="mb-6">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em]">Price Range</h3>
-        <div className="space-y-3 text-sm text-[#6f5160]">
+    <aside className="hidden h-fit rounded-[18px] bg-white p-5 shadow-[0_18px_40px_rgba(36,21,29,0.06)] lg:block">
+      <div className="mb-8">
+        <h3 className="mb-4 text-[14px] font-semibold uppercase tracking-[0.28em] text-[#24151d]">Price Range</h3>
+        <div className="space-y-4 text-sm text-[#6f5160]">
           <input
             type="range"
             min="0"
@@ -27,20 +27,20 @@ function FilterSidebar({ filters, setFilters, colors, fabrics, maxAvailablePrice
             }
             className="w-full accent-brand"
           />
-          <p>Up to Rs. {filters.maxPrice.toLocaleString('en-IN')}</p>
+          <p className="text-[14px] text-[#6f5160]">Up to Rs. {filters.maxPrice.toLocaleString('en-IN')}</p>
         </div>
       </div>
 
-      <div className="mb-6">
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em]">Color</h3>
-        <div className="space-y-2">
+      <div className="mb-8">
+        <h3 className="mb-4 text-[14px] font-semibold uppercase tracking-[0.28em] text-[#24151d]">Color</h3>
+        <div className="space-y-3">
           {colors.map((color) => (
-            <label key={color} className="flex items-center gap-3 text-sm text-[#6f5160]">
+            <label key={color} className="flex items-center gap-3 text-[14px] text-[#6f5160]">
               <input
                 type="checkbox"
                 checked={filters.colors.includes(color)}
                 onChange={() => toggleArrayValue('colors', color)}
-                className="accent-brand"
+                className="h-4 w-4 rounded-sm accent-brand"
               />
               {color}
             </label>
@@ -49,15 +49,15 @@ function FilterSidebar({ filters, setFilters, colors, fabrics, maxAvailablePrice
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em]">Fabric</h3>
-        <div className="space-y-2">
+        <h3 className="mb-4 text-[14px] font-semibold uppercase tracking-[0.28em] text-[#24151d]">Fabric</h3>
+        <div className="space-y-3">
           {fabrics.map((fabric) => (
-            <label key={fabric} className="flex items-center gap-3 text-sm text-[#6f5160]">
+            <label key={fabric} className="flex items-center gap-3 text-[14px] text-[#6f5160]">
               <input
                 type="checkbox"
                 checked={filters.fabrics.includes(fabric)}
                 onChange={() => toggleArrayValue('fabrics', fabric)}
-                className="accent-brand"
+                className="h-4 w-4 rounded-sm accent-brand"
               />
               {fabric}
             </label>

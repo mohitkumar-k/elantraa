@@ -5,7 +5,7 @@ import Navbar from './Navbar'
 function Layout() {
   return (
     <div className="min-h-screen">
-      <div className="bg-brand px-4 py-2 text-center text-[11px] font-semibold tracking-[0.28em] text-white sm:text-xs">
+      <div className="border-b border-black bg-black px-3 py-2 text-center text-[10px] font-semibold tracking-[0.18em] text-white sm:px-4 sm:text-xs sm:tracking-[0.28em]">
         FREE SHIPPING & COD AVAILABLE IN INDIA
       </div>
       <Navbar />

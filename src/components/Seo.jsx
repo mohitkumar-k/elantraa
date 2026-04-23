@@ -12,7 +12,7 @@ function Seo({ title, description }) {
           description || 'Premium Indian fashion e-commerce destination for festive wear, sarees, lehengas, and kurtis.'
         }
       />
-      <meta name="theme-color" content="#C2185B" />
+      <meta name="theme-color" content="#FFFFFF" />
     </Helmet>
   )
 }
