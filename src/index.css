@@ -4,10 +4,10 @@
 @theme {
   --color-brand: #C9A227;
   --color-brand-soft: #E0B84A;
-  --color-cream: #FFFFFF;
-  --color-sand: #FFFFFF;
-  --color-ink: #A8841F;
-  --color-muted: #C9A227;
+  --color-cream: #FFF9EF;
+  --color-sand: #F6E7C8;
+  --color-ink: #7B5B17;
+  --color-muted: #AF8D2B;
   --font-display: "Cormorant Garamond", serif;
   --font-body: "Inter", sans-serif;
 }
@@ -19,7 +19,9 @@ html {
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: #ffffff;
+  background:
+    radial-gradient(circle at top, rgba(224, 184, 74, 0.14), transparent 32%),
+    linear-gradient(180deg, #fffdf7 0%, #fffaf0 42%, #ffffff 100%);
   color: var(--color-ink);
 }
 
@@ -52,7 +54,7 @@ textarea {
 }
 
 .glass-card {
-  @apply rounded-[28px] border border-[#E0B84A] bg-white shadow-[0_18px_60px_rgba(168,132,31,0.12)] backdrop-blur;
+  @apply rounded-[30px] border border-[rgba(201,162,39,0.26)] bg-[rgba(255,255,255,0.88)] shadow-[0_24px_70px_rgba(168,132,31,0.12)] backdrop-blur;
 }
 
 .soft-border {
@@ -60,15 +62,19 @@ textarea {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold tracking-[0.18em] text-white transition hover:bg-[#A8841F];
+  @apply inline-flex items-center justify-center rounded-full bg-brand px-6 py-3.5 text-sm font-semibold tracking-[0.16em] text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#A8841F];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-full border border-[#A8841F] px-6 py-3 text-sm font-semibold tracking-[0.18em] text-[#A8841F] transition hover:bg-[#A8841F] hover:text-white;
+  @apply inline-flex items-center justify-center rounded-full border border-[#A8841F] px-6 py-3.5 text-sm font-semibold tracking-[0.16em] text-[#A8841F] transition duration-300 hover:-translate-y-0.5 hover:bg-[#A8841F] hover:text-white;
 }
 
 .fade-in-up {
   animation: fadeInUp 0.8s ease both;
+}
+
+.section-panel {
+  @apply rounded-[30px] border border-[rgba(201,162,39,0.16)] bg-[rgba(255,255,255,0.76)] shadow-[0_22px_60px_rgba(168,132,31,0.08)] backdrop-blur;
 }
 
 @keyframes fadeInUp {

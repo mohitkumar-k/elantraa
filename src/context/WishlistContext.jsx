@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { getUserProfile, upsertUserProfile } from '../firebase/services'
 import { useAuth } from '../hooks/useAuth'
+import { getProductCoverImage } from '../utils/productImages'
 import { WishlistContext } from './wishlist-context'
 
 export function WishlistProvider({ children }) {
@@ -43,7 +44,7 @@ export function WishlistProvider({ children }) {
                 name: product.name,
                 salePrice: product.salePrice,
                 mrp: product.mrp,
-                image: product.images?.[0],
+                image: getProductCoverImage(product),
               },
             ]
 

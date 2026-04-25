@@ -15,6 +15,11 @@ import {
 } from '../firebase/services'
 import { formatPrice, slugify } from '../utils/format'
 import { formatFileSize, prepareCompressedImages } from '../utils/imageUpload'
+import {
+  buildProductImageCollection,
+  getProductCoverImage,
+  getProductGalleryImages,
+} from '../utils/productImages'
 
 const emptyProduct = {
   id: '',
@@ -22,6 +27,7 @@ const emptyProduct = {
   category: '',
   mrp: 0,
   salePrice: 0,
+  coverImage: '',
   images: [],
   sizes: ['S', 'M', 'L', 'XL', 'XXL', 'Free Size'],
   fabric: '',
@@ -49,9 +55,11 @@ function AdminPage() {
     imageAlt: '',
   })
   const [files, setFiles] = useState([])
+  const [coverFile, setCoverFile] = useState(null)
   const [categoryImageFile, setCategoryImageFile] = useState(null)
   const [heroImageFile, setHeroImageFile] = useState(null)
   const [isCompressing, setIsCompressing] = useState(false)
+  const [isCoverCompressing, setIsCoverCompressing] = useState(false)
   const [isCategoryImageCompressing, setIsCategoryImageCompressing] = useState(false)
   const [isHeroImageCompressing, setIsHeroImageCompressing] = useState(false)
 
@@ -90,12 +98,23 @@ function AdminPage() {
   async function handleProductSubmit(event) {
     event.preventDefault()
     const id = productForm.id || slugify(productForm.name)
+    const uploadedCoverImage = coverFile
+      ? await uploadProductImages(
+          id,
+          [coverFile.file],
+        )
+      : []
     const uploadedImages = files.length
       ? await uploadProductImages(
           id,
           files.map((item) => item.file),
         )
       : []
+    const coverImage = uploadedCoverImage[0] || getProductCoverImage(productForm)
+    const galleryImages = uploadedImages.length
+      ? [...getProductGalleryImages(productForm), ...uploadedImages]
+      : getProductGalleryImages(productForm)
+    const allImages = buildProductImageCollection(coverImage, galleryImages)
 
     const payload = {
       ...productForm,
@@ -103,7 +122,8 @@ function AdminPage() {
       mrp: Number(productForm.mrp),
       salePrice: Number(productForm.salePrice),
       stock: Number(productForm.stock),
-      images: uploadedImages.length ? uploadedImages : productForm.images,
+      coverImage: coverImage || allImages[0] || '',
+      images: allImages,
       createdAt: productForm.createdAt || new Date().toISOString(),
     }
 
@@ -114,7 +134,29 @@ function AdminPage() {
     })
     setProductForm({ ...emptyProduct, category: categories[0]?.slug || '' })
     setFiles([])
+    setCoverFile(null)
     toast.success('Product saved')
+  }
+
+  async function handleCoverImageChange(event) {
+    const selectedFiles = event.target.files
+    if (!selectedFiles?.length) {
+      setCoverFile(null)
+      return
+    }
+
+    setIsCoverCompressing(true)
+
+    try {
+      const [prepared] = await prepareCompressedImages([selectedFiles[0]])
+      setCoverFile(prepared)
+      toast.success('Cover image ready for upload')
+    } catch (error) {
+      toast.error(error.message || 'Unable to prepare cover image')
+    } finally {
+      setIsCoverCompressing(false)
+      event.target.value = ''
+    }
   }
 
   async function handleFilesChange(event) {
@@ -140,6 +182,48 @@ function AdminPage() {
 
   function removePreparedFile(fileId) {
     setFiles((current) => current.filter((item) => item.id !== fileId))
+  }
+
+  function removeCoverFile() {
+    setCoverFile(null)
+  }
+
+  function removeExistingCoverImage() {
+    setCoverFile(null)
+    setProductForm((current) => {
+      const galleryImages = getProductGalleryImages(current)
+      return {
+        ...current,
+        coverImage: '',
+        images: [...galleryImages],
+      }
+    })
+  }
+
+  function removeExistingGalleryImage(imageToRemove) {
+    setProductForm((current) => {
+      const coverImage = getProductCoverImage(current)
+      const galleryImages = getProductGalleryImages(current).filter((image) => image !== imageToRemove)
+      return {
+        ...current,
+        images: buildProductImageCollection(coverImage, galleryImages),
+      }
+    })
+  }
+
+  function startEditingProduct(product) {
+    const coverImage = getProductCoverImage(product)
+    const galleryImages = getProductGalleryImages(product)
+
+    setProductForm({
+      ...emptyProduct,
+      ...product,
+      category: product.category || categories[0]?.slug || '',
+      coverImage,
+      images: buildProductImageCollection(coverImage, galleryImages),
+    })
+    setCoverFile(null)
+    setFiles([])
   }
 
   async function handleCategoryImageChange(event) {
@@ -342,6 +426,57 @@ function AdminPage() {
                 className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3"
               />
               <input
+                type="text"
+                placeholder="Cover image URL (optional)"
+                value={productForm.coverImage}
+                onChange={(event) => setProductForm((current) => ({ ...current, coverImage: event.target.value }))}
+                className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverImageChange}
+                className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3"
+              />
+              <div className="rounded-[22px] border border-dashed border-[#E0B84A] bg-white p-4">
+                <div className="flex items-center gap-3 text-sm text-[#C9A227]">
+                  <FiUploadCloud className="text-lg text-brand" />
+                  <p>Upload one cover image. This image will be used first across the website.</p>
+                </div>
+                {isCoverCompressing && (
+                  <p className="mt-3 text-sm font-medium text-brand">Compressing cover image...</p>
+                )}
+                {(coverFile || getProductCoverImage(productForm)) && (
+                  <div className="mt-4 rounded-[18px] border border-[#E0B84A] bg-white p-3">
+                    <div className="relative overflow-hidden rounded-[14px]">
+                      <img
+                        src={coverFile?.preview || getProductCoverImage(productForm)}
+                        alt={coverFile?.name || productForm.name || 'Cover image'}
+                        className="h-40 w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-2 top-2 rounded-full bg-white p-2 shadow-sm"
+                        onClick={coverFile ? removeCoverFile : removeExistingCoverImage}
+                        aria-label="Remove cover image"
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                    <div className="mt-3 text-sm">
+                      <p className="truncate font-medium text-[#A8841F]">
+                        {coverFile?.originalName || 'Current cover image'}
+                      </p>
+                      {coverFile && (
+                        <p className="mt-1 text-[#C9A227]">
+                          {formatFileSize(coverFile.originalSize)} to {formatFileSize(coverFile.compressedSize)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <input
                 type="file"
                 multiple
                 accept="image/*"
@@ -351,10 +486,32 @@ function AdminPage() {
               <div className="rounded-[22px] border border-dashed border-[#E0B84A] bg-white p-4">
                 <div className="flex items-center gap-3 text-sm text-[#C9A227]">
                   <FiUploadCloud className="text-lg text-brand" />
-                  <p>Upload product images. Selected files are compressed before Firebase upload.</p>
+                  <p>Upload additional gallery images. Selected files are compressed before Firebase upload.</p>
                 </div>
                 {isCompressing && (
                   <p className="mt-3 text-sm font-medium text-brand">Compressing selected images...</p>
+                )}
+                {!files.length && getProductGalleryImages(productForm).length > 0 && (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {getProductGalleryImages(productForm).map((image, index) => (
+                      <div key={`${image}-${index}`} className="rounded-[18px] border border-[#E0B84A] bg-white p-3">
+                        <div className="relative overflow-hidden rounded-[14px]">
+                          <img src={image} alt={`Gallery ${index + 1}`} className="h-32 w-full object-cover" />
+                          <button
+                            type="button"
+                            className="absolute right-2 top-2 rounded-full bg-white p-2 shadow-sm"
+                            onClick={() => removeExistingGalleryImage(image)}
+                            aria-label={`Remove gallery image ${index + 1}`}
+                          >
+                            <FiX />
+                          </button>
+                        </div>
+                        <div className="mt-3 text-sm">
+                          <p className="font-medium text-[#A8841F]">Current gallery image {index + 1}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
                 {files.length > 0 && (
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -399,15 +556,22 @@ function AdminPage() {
             <div className="space-y-4">
               {products.map((product) => (
                 <div key={product.id} className="glass-card flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-                  <img src={product.images?.[0]} alt={product.name} className="h-24 w-20 rounded-[18px] object-cover" />
+                  <img
+                    src={getProductCoverImage(product)}
+                    alt={product.name}
+                    className="h-24 w-20 rounded-[18px] object-cover"
+                  />
                   <div className="flex-1">
                     <p className="font-semibold text-[#A8841F]">{product.name}</p>
                     <p className="text-sm text-[#C9A227]">
                       {product.category} - {formatPrice(product.salePrice)}
                     </p>
+                    <p className="mt-1 text-xs text-[#B08E39]">
+                      Cover + {Math.max(buildProductImageCollection(getProductCoverImage(product), getProductGalleryImages(product)).length - 1, 0)} gallery image(s)
+                    </p>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" className="btn-secondary" onClick={() => setProductForm(product)}>
+                    <button type="button" className="btn-secondary" onClick={() => startEditingProduct(product)}>
                       Edit
                     </button>
                     <button type="button" className="btn-primary" onClick={() => handleDeleteProduct(product.id)}>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { CartContext } from './cart-context'
+import { getProductCoverImage } from '../utils/productImages'
 const STORAGE_KEY = 'elantraa_cart'
 
 export function CartProvider({ children }) {
@@ -41,7 +42,7 @@ export function CartProvider({ children }) {
             {
               id: product.id,
               name: product.name,
-              image: product.images?.[0],
+              image: getProductCoverImage(product),
               mrp: product.mrp,
               salePrice: product.salePrice,
               size,

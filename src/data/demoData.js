@@ -69,6 +69,7 @@ export const demoProducts = productSeed.map(
       category,
       mrp,
       salePrice,
+      coverImage: `https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80&sig=${index + 1}`,
       images: [
         `https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80&sig=${index + 1}`,
         `https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80&sig=${index + 11}`,

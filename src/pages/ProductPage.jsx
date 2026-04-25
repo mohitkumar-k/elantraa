@@ -11,6 +11,7 @@ import { useCart } from '../hooks/useCart'
 import { useWishlist } from '../hooks/useWishlist'
 import { useProduct, useProducts } from '../hooks/useStoreData'
 import { formatPrice, getDeliveryEstimate } from '../utils/format'
+import { getProductImageSet } from '../utils/productImages'
 
 const trustBadges = ['Cash on Delivery', 'Free Shipping', 'Ships on Time', '2 Days Easy Return']
 
@@ -47,7 +48,7 @@ function ProductPage() {
 
       <section className="container-shell page-section">
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <ImageGallery images={product.images} />
+          <ImageGallery images={getProductImageSet(product)} />
           <div className="glass-card p-6 sm:p-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand">{product.category}</p>
             <h1 className="heading-display text-4xl text-[#A8841F] sm:text-5xl">{product.name}</h1>
