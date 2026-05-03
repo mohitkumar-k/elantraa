@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import RazorpayButton from '../components/RazorpayButton'
 import Seo from '../components/Seo'
+import TrustBlocks from '../components/TrustBlocks'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
 import { saveOrder } from '../firebase/services'
-import { formatPrice } from '../utils/format'
+import { formatPrice, normalizeSizeLabel } from '../utils/format'
 
 const defaultAddress = {
   name: '',
@@ -66,13 +67,42 @@ function CheckoutPage() {
     setSaving(false)
   }
 
+  if (items.length === 0) {
+    return (
+      <>
+        <Seo title="Checkout" />
+        <section className="container-shell page-section">
+          <div className="mx-auto max-w-2xl border-y border-[#DED4C5] py-10 text-center sm:py-14">
+            <p className="text-[11px] font-medium uppercase tracking-[0.34em] text-[#8E7E67]">Secure checkout</p>
+            <h1 className="mt-4 text-[2.05rem] font-semibold uppercase leading-none tracking-[-0.05em] text-[#1F170E] sm:text-5xl">
+              Your bag is empty
+            </h1>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#6E5F4C] sm:text-base sm:leading-7">
+              Add your selected pieces to the cart before checkout. Your delivery details and payment options will appear here once your bag has items.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <Link to="/cart" className="btn-secondary">
+                Return to cart
+              </Link>
+              <Link to="/" className="btn-primary">
+                Explore collection
+              </Link>
+            </div>
+          </div>
+          <TrustBlocks />
+        </section>
+      </>
+    )
+  }
+
   return (
     <>
       <Seo title="Checkout" />
       <section className="container-shell page-section">
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="glass-card p-6 sm:p-8">
-            <h1 className="heading-display mb-6 text-4xl text-[#A8841F]">Checkout</h1>
+          <div className="border border-[#DED4C5] bg-white p-5 sm:p-8">
+            <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.34em] text-[#8E7E67]">Secure checkout</p>
+            <h1 className="mb-6 text-[2.05rem] font-semibold uppercase leading-none tracking-[-0.05em] text-[#1F170E] sm:text-5xl">Checkout</h1>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
                 ['name', 'Name'],
@@ -83,19 +113,19 @@ function CheckoutPage() {
                 ['pincode', 'Pincode'],
               ].map(([key, label]) => (
                 <label key={key} className={key === 'address' ? 'sm:col-span-2' : ''}>
-                  <span className="mb-2 block text-sm text-[#C9A227]">{label}</span>
+                  <span className="mb-2 block text-sm text-[#6E5F4C]">{label}</span>
                   <input
                     type="text"
                     value={address[key]}
                     onChange={(event) => setAddress((current) => ({ ...current, [key]: event.target.value }))}
-                    className="w-full rounded-[18px] border border-[#E0B84A] bg-white px-4 py-3 text-[#A8841F] outline-none focus:border-brand"
+                    className="w-full border border-[#DED4C5] bg-white px-4 py-3 text-[#1F170E] outline-none focus:border-[#24190D]"
                   />
                 </label>
               ))}
             </div>
 
             <div className="mt-6">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em]">Payment Method</p>
+              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#1F170E]">Payment Method</p>
               <div className="flex flex-wrap gap-3">
                 {[
                   ['razorpay', 'Razorpay: Card, UPI, Netbanking, Wallets'],
@@ -104,8 +134,8 @@ function CheckoutPage() {
                   <button
                     key={value}
                     type="button"
-                    className={`rounded-full border px-4 py-2 text-sm ${
-                      address.paymentMethod === value ? 'border-brand bg-brand text-white' : 'border-[#E0B84A] bg-white text-[#A8841F]'
+                    className={`border px-4 py-2 text-sm ${
+                      address.paymentMethod === value ? 'border-[#24190D] bg-[#24190D] text-white' : 'border-[#DED4C5] bg-white text-[#1F170E]'
                     }`}
                     onClick={() => setAddress((current) => ({ ...current, paymentMethod: value }))}
                   >
@@ -116,21 +146,21 @@ function CheckoutPage() {
             </div>
           </div>
 
-          <div className="glass-card h-fit p-6">
-            <h2 className="mb-6 text-lg font-semibold uppercase tracking-[0.18em]">Order Summary</h2>
+          <div className="h-fit border border-[#DED4C5] bg-white p-5 sm:p-6 lg:sticky lg:top-28">
+            <h2 className="mb-5 text-base font-semibold uppercase tracking-[0.2em] text-[#1F170E] sm:mb-6">Order Summary</h2>
             <div className="space-y-4">
               {items.map((item) => (
-                <div key={`${item.id}-${item.size}`} className="flex items-center gap-3 rounded-[20px] bg-white p-3">
-                  <img src={item.image} alt={item.name} className="h-16 w-14 rounded-[14px] object-cover" />
+                <div key={`${item.id}-${item.size}`} className="flex items-center gap-3 border-b border-[#EEE5D9] pb-4 last:border-b-0">
+                  <img src={item.image} alt={item.name} loading="lazy" decoding="async" className="h-16 w-14 rounded-[8px] object-cover" />
                   <div className="flex-1 text-sm">
-                    <p className="font-medium text-[#A8841F]">{item.name}</p>
-                    <p className="text-[#C9A227]">Qty {item.quantity}</p>
+                    <p className="font-medium uppercase leading-snug tracking-[-0.01em] text-[#1F170E]">{item.name}</p>
+                    <p className="mt-1 text-[#6E5F4C]">Size {normalizeSizeLabel(item.size)} | Qty {item.quantity}</p>
                   </div>
-                  <p className="text-sm font-semibold text-brand">{formatPrice(item.salePrice * item.quantity)}</p>
+                  <p className="text-sm font-semibold text-[#1F170E]">{formatPrice(item.salePrice * item.quantity)}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-6 space-y-3 text-sm text-[#C9A227]">
+            <div className="mt-6 space-y-3 text-sm text-[#6E5F4C]">
               <div className="flex justify-between">
                 <span>MRP Total</span>
                 <span>{formatPrice(mrpTotal)}</span>
@@ -139,7 +169,7 @@ function CheckoutPage() {
                 <span>Discount</span>
                 <span className="text-brand">- {formatPrice(discount)}</span>
               </div>
-              <div className="flex justify-between font-semibold text-[#A8841F]">
+              <div className="flex justify-between border-t border-[#DED4C5] pt-4 font-semibold text-[#1F170E]">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
@@ -158,6 +188,7 @@ function CheckoutPage() {
                 {saving ? 'PROCESSING...' : 'PLACE COD ORDER'}
               </button>
             )}
+            <TrustBlocks compact />
           </div>
         </div>
       </section>

@@ -11,7 +11,7 @@ import Seo from '../components/Seo'
 import { useCart } from '../hooks/useCart'
 import { useWishlist } from '../hooks/useWishlist'
 import { useProduct, useProducts } from '../hooks/useStoreData'
-import { formatPrice, getDeliveryEstimate, getDiscountPercent } from '../utils/format'
+import { formatPrice, getDeliveryEstimate, getDiscountPercent, normalizeSizeLabel } from '../utils/format'
 import { getProductImageSet } from '../utils/productImages'
 
 const accordionSections = [
@@ -71,7 +71,7 @@ function ProductPage() {
   const [size, setSize] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [sizeChartOpen, setSizeChartOpen] = useState(false)
-  const [sizeChartUnit, setSizeChartUnit] = useState('inches')
+  const [sizeChartUnit, setSizeChartUnit] = useState('cm')
   const [sizeChartSection, setSizeChartSection] = useState('details')
 
   const related = useMemo(() => {
@@ -91,8 +91,13 @@ function ProductPage() {
 
   const savings = product.mrp - product.salePrice
   const discount = getDiscountPercent(product.mrp, product.salePrice)
-  const productSizes = product.sizes?.length ? product.sizes : ['Free Size']
+  const productSizes = product.sizes?.length ? product.sizes.map(normalizeSizeLabel) : ['Custom']
   const selectedSize = size || productSizes[0]
+  const openCustomizationChat = () => {
+    const productLink = typeof window !== 'undefined' ? window.location.href : ''
+    const message = encodeURIComponent(`Hi ELANTRAA, I want to inquire about customization for ${product.name}. Product link: ${productLink}`)
+    window.open(`https://wa.me/919015342951?text=${message}`, '_blank', 'noopener,noreferrer')
+  }
   const detailsContent = {
     information:
       product.description ||
@@ -139,7 +144,7 @@ function ProductPage() {
                   type="button"
                   className="inline-flex items-center gap-2 text-[1rem] font-medium text-[#1F170E] underline underline-offset-4"
                   onClick={() => {
-                    setSizeChartUnit('inches')
+                    setSizeChartUnit('cm')
                     setSizeChartSection('details')
                     setSizeChartOpen(true)
                   }}
@@ -203,7 +208,7 @@ function ProductPage() {
               <button
                 type="button"
                 className="inline-flex w-full items-center justify-center border border-[#24190D] px-6 py-5 text-[1rem] font-semibold tracking-[0.04em] text-[#24190D] transition hover:bg-[#F5EFE8]"
-                onClick={() => toast.success('Customization enquiries can be shared through support.')}
+                onClick={openCustomizationChat}
               >
                 Inquire about customization
               </button>
@@ -243,7 +248,7 @@ function ProductPage() {
             </div>
 
             <div className="py-8">
-              <div className="rounded-[24px] border border-[#E6DCCD] bg-[#FBF7F2] px-5 py-4 text-sm text-[#7D6C58]">
+              <div className="rounded-[16px] border border-[#E6DCCD] bg-[#FBF7F2] px-5 py-4 text-sm text-[#7D6C58]">
                 <p className="flex items-center gap-2 font-medium text-[#1F170E]">
                   <FiTruck /> Delivery by {getDeliveryEstimate(7)}
                 </p>
@@ -291,6 +296,35 @@ function ProductPage() {
         </div>
       </section>
 
+      <div className="fixed inset-x-0 bottom-[calc(76px+env(safe-area-inset-bottom))] z-[45] border-t border-[#DED4C5] bg-white/96 px-3 py-3 shadow-[0_-18px_42px_rgba(33,26,19,0.14)] backdrop-blur-xl sm:hidden">
+        <div className="mx-auto max-w-md">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[#1F170E]">{product.name}</p>
+              <p className="mt-0.5 text-[11px] text-[#6E5F4C]">Size {selectedSize} | Qty {quantity}</p>
+            </div>
+            <p className="shrink-0 text-sm font-semibold text-[#1F170E]">{formatPrice(product.salePrice * quantity)}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center justify-center border border-[#24190D] bg-white px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#24190D]"
+              onClick={() => addToCart(product, selectedSize, quantity)}
+            >
+              Add to cart
+            </button>
+            <RazorpayButton
+              amount={product.salePrice * quantity}
+              customer={{}}
+              className="inline-flex min-h-11 items-center justify-center border border-[#24190D] bg-[#24190D] px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-white"
+              onSuccess={() => toast.success('Payment completed. Continue through checkout for saved order flow.')}
+            >
+              Buy now
+            </RazorpayButton>
+          </div>
+        </div>
+      </div>
+
       {sizeChartOpen && (
         <div className="fixed inset-0 z-[70] flex items-end bg-[rgba(22,15,9,0.68)] sm:items-center sm:justify-center">
           <button
@@ -299,19 +333,19 @@ function ProductPage() {
             aria-label="Close size chart"
             onClick={() => setSizeChartOpen(false)}
           />
-          <div className="relative z-10 h-[88vh] w-full overflow-hidden rounded-t-[24px] bg-white shadow-[0_-12px_36px_rgba(34,24,12,0.18)] sm:h-[90vh] sm:max-w-6xl sm:rounded-[28px]">
+          <div className="relative z-10 h-[88vh] w-full overflow-hidden rounded-t-[18px] bg-white shadow-[0_-12px_36px_rgba(34,24,12,0.18)] sm:h-[90vh] sm:max-w-6xl sm:rounded-[18px]">
             <div className="flex h-full flex-col overflow-hidden">
-              <div className="shrink-0 border-b border-[#2B2116] px-4 pb-5 pt-5 sm:px-8 sm:pt-7">
+              <div className="shrink-0 border-b border-[#2B2116] px-4 pb-4 pt-4 sm:px-7 sm:pt-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 text-center">
-                    <h2 className="mx-auto max-w-3xl text-[1rem] font-semibold tracking-[-0.03em] text-[#1F170E] sm:text-[1.9rem]">
+                    <h2 className="mx-auto max-w-3xl text-[0.9rem] font-semibold tracking-[-0.02em] text-[#1F170E] sm:text-[1.35rem]">
                       {product.name}
                     </h2>
-                    <p className="mt-2 text-[0.95rem] text-[#3F352B] sm:text-[1.05rem]">Size Charts</p>
+                    <p className="mt-1.5 text-[0.8rem] text-[#3F352B] sm:text-[0.9rem]">Size Charts</p>
                   </div>
                   <button
                     type="button"
-                    className="inline-flex h-10 w-10 items-center justify-center text-[2rem] leading-none text-[#1F170E]"
+                    className="inline-flex h-8 w-8 items-center justify-center text-[1.5rem] leading-none text-[#1F170E] sm:h-9 sm:w-9"
                     onClick={() => setSizeChartOpen(false)}
                     aria-label="Close size chart"
                   >
@@ -320,12 +354,12 @@ function ProductPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
-                <div className="border border-[#EEE5D9] bg-white p-3 sm:p-6">
+              <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-7 sm:py-5">
+                <div className="border border-[#EEE5D9] bg-white p-2 sm:p-4">
                   <div className="mb-0 flex items-end gap-0">
                     <button
                       type="button"
-                      className={`border border-b-0 px-5 py-4 text-[1rem] font-semibold ${
+                      className={`border border-b-0 px-4 py-2.5 text-[0.82rem] font-semibold sm:px-5 sm:py-3 sm:text-[0.9rem] ${
                         sizeChartUnit === 'cm' ? 'bg-white text-[#1F170E]' : 'bg-[#FBFBFB] text-[#B8B0A5]'
                       }`}
                       onClick={() => setSizeChartUnit('cm')}
@@ -334,7 +368,7 @@ function ProductPage() {
                     </button>
                     <button
                       type="button"
-                      className={`border border-b-0 px-5 py-4 text-[1rem] font-semibold ${
+                      className={`border border-b-0 px-4 py-2.5 text-[0.82rem] font-semibold sm:px-5 sm:py-3 sm:text-[0.9rem] ${
                         sizeChartUnit === 'inches' ? 'bg-white text-[#1F170E]' : 'bg-[#FBFBFB] text-[#B8B0A5]'
                       }`}
                       onClick={() => setSizeChartUnit('inches')}
@@ -343,11 +377,11 @@ function ProductPage() {
                     </button>
                   </div>
 
-                  <div className="overflow-x-auto border border-[#EEE5D9] p-3 sm:p-7">
-                    <div className="min-w-[900px] overflow-hidden border border-[#E5E0D8]">
-                      <div className="grid grid-cols-[0.9fr_1.8fr_1fr_1.6fr_1.1fr_1.1fr_1fr] bg-white text-center text-[12px] font-semibold uppercase tracking-[0.08em] text-[#1F170E] sm:text-[0.95rem]">
+                  <div className="overflow-x-auto border border-[#EEE5D9] p-2 sm:p-4">
+                    <div className="min-w-[700px] overflow-hidden border border-[#E5E0D8]">
+                      <div className="grid grid-cols-[0.8fr_1.5fr_0.9fr_1.35fr_1fr_1fr_0.9fr] bg-white text-center text-[10px] font-semibold uppercase tracking-[0.06em] text-[#1F170E] sm:text-[0.76rem]">
                         {sizeChartColumns.map((column) => (
-                          <div key={column} className="border-r border-b border-[#E5E0D8] px-3 py-3 last:border-r-0">
+                          <div key={column} className="border-r border-b border-[#E5E0D8] px-2 py-2 last:border-r-0 sm:py-2.5">
                             {column}
                           </div>
                         ))}
@@ -355,12 +389,12 @@ function ProductPage() {
                       {sizeChartData[sizeChartUnit].map((row) => (
                         <div
                           key={`${sizeChartUnit}-${row[0]}`}
-                          className="grid grid-cols-[0.9fr_1.8fr_1fr_1.6fr_1.1fr_1.1fr_1fr] text-center text-[0.95rem] text-[#1F170E] sm:text-[1rem]"
+                          className="grid grid-cols-[0.8fr_1.5fr_0.9fr_1.35fr_1fr_1fr_0.9fr] text-center text-[0.78rem] text-[#1F170E] sm:text-[0.86rem]"
                         >
                           {row.map((cell, index) => (
                             <div
                               key={`${row[0]}-${sizeChartColumns[index]}`}
-                              className={`border-r border-b border-[#E5E0D8] px-3 py-3 ${index === 0 ? 'font-semibold' : ''} ${
+                              className={`border-r border-b border-[#E5E0D8] px-2 py-2 sm:py-2.5 ${index === 0 ? 'font-semibold' : ''} ${
                                 index === row.length - 1 ? 'last:border-r-0' : ''
                               }`}
                             >
@@ -373,11 +407,11 @@ function ProductPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 border border-[#EEE5D9]">
+                <div className="mt-4 border border-[#EEE5D9]">
                   <div className="grid grid-cols-2">
                     <button
                       type="button"
-                      className={`border-r border-b border-[#EEE5D9] px-5 py-4 text-[1rem] font-medium ${
+                      className={`border-r border-b border-[#EEE5D9] px-3 py-3 text-[0.82rem] font-medium sm:px-5 sm:text-[0.9rem] ${
                         sizeChartSection === 'details' ? 'bg-white text-[#1F170E]' : 'bg-[#FBFBFB] text-[#C1B9AE]'
                       }`}
                       onClick={() => setSizeChartSection('details')}
@@ -386,7 +420,7 @@ function ProductPage() {
                     </button>
                     <button
                       type="button"
-                      className={`border-b border-[#EEE5D9] px-5 py-4 text-[1rem] font-medium ${
+                      className={`border-b border-[#EEE5D9] px-3 py-3 text-[0.82rem] font-medium sm:px-5 sm:text-[0.9rem] ${
                         sizeChartSection === 'how-to' ? 'bg-white text-[#1F170E]' : 'bg-[#FBFBFB] text-[#C1B9AE]'
                       }`}
                       onClick={() => setSizeChartSection('how-to')}
@@ -394,29 +428,29 @@ function ProductPage() {
                       How To Measure
                     </button>
                   </div>
-                  <div className="space-y-6 px-5 py-6 text-[1rem] leading-8 text-[#1F170E] sm:px-6 sm:py-7">
+                  <div className="space-y-4 px-4 py-4 text-[0.84rem] leading-6 text-[#1F170E] sm:px-5 sm:py-5 sm:text-[0.92rem] sm:leading-7">
                     {sizeChartSection === 'details' ? (
                       <>
                         <p>
-                          For Custom measurement, you can connect us at{' '}
+                          For custom measurements, connect with us on{' '}
                           <a
-                            href="https://wa.me/9967996897?text="
+                            href="https://wa.me/919015342951?text=Hi%20ELANTRAA%2C%20I%20need%20help%20with%20custom%20measurements."
                             target="_blank"
                             rel="noreferrer"
                             className="break-all text-[#2D43D6] underline underline-offset-4"
                           >
-                            https://wa.me/9967996897?text=
+                            WhatsApp
                           </a>{' '}
-                          - Or sales@papadontpreach.com
+                          or email support@elantraa.com.
                         </p>
-                        <ol className="space-y-4 pl-6">
+                        <ol className="space-y-3 pl-5">
                           {measurementDetails.map((item) => (
                             <li key={item}>{item}</li>
                           ))}
                         </ol>
                       </>
                     ) : (
-                      <ol className="space-y-4 pl-6">
+                      <ol className="space-y-3 pl-5">
                         {howToMeasureDetails.map((item) => (
                           <li key={item}>{item}</li>
                         ))}

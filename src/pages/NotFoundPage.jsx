@@ -8,8 +8,8 @@ function NotFoundPage() {
       <section className="container-shell flex min-h-[60vh] items-center justify-center py-16">
         <div className="max-w-lg text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-brand">404</p>
-          <h1 className="heading-display mt-4 text-5xl text-[#A8841F]">This page slipped out of style.</h1>
-          <p className="mt-4 text-sm leading-7 text-[#C9A227]">The page you are looking for does not exist or may have moved.</p>
+          <h1 className="heading-display mt-4 text-5xl text-ink">This page slipped out of style.</h1>
+          <p className="mt-4 text-sm leading-7 text-muted">The page you are looking for does not exist or may have moved.</p>
           <Link to="/" className="btn-primary mt-8">
             Back to Home
           </Link>

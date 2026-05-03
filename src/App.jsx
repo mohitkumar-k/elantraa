@@ -14,6 +14,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import OrdersPage from './pages/OrdersPage'
 import ProductPage from './pages/ProductPage'
 import ProfilePage from './pages/ProfilePage'
+import SearchPage from './pages/SearchPage'
 import WishlistPage from './pages/WishlistPage'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/product/:productId" element={<ProductPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
@@ -69,8 +71,8 @@ function App() {
           style: {
             borderRadius: '18px',
             background: '#ffffff',
-            color: '#A8841F',
-            border: '1px solid rgba(201, 162, 39, 0.24)',
+            color: '#211A13',
+            border: '1px solid #E5DED4',
           },
         }}
       />

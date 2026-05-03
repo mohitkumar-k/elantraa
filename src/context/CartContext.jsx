@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { CartContext } from './cart-context'
+import { normalizeSizeLabel } from '../utils/format'
 import { getProductCoverImage } from '../utils/productImages'
 const STORAGE_KEY = 'elantraa_cart'
 
@@ -27,12 +28,13 @@ export function CartProvider({ children }) {
       mrpTotal,
       total,
       discount: mrpTotal - total,
-      addToCart(product, size = 'Free Size', quantity = 1) {
+      addToCart(product, size = 'Custom', quantity = 1) {
+        const selectedSize = normalizeSizeLabel(size)
         setItems((current) => {
-          const existing = current.find((item) => item.id === product.id && item.size === size)
+          const existing = current.find((item) => item.id === product.id && normalizeSizeLabel(item.size) === selectedSize)
           if (existing) {
             return current.map((item) =>
-              item.id === product.id && item.size === size
+              item.id === product.id && normalizeSizeLabel(item.size) === selectedSize
                 ? { ...item, quantity: item.quantity + quantity }
                 : item,
             )
@@ -45,7 +47,7 @@ export function CartProvider({ children }) {
               image: getProductCoverImage(product),
               mrp: product.mrp,
               salePrice: product.salePrice,
-              size,
+              size: selectedSize,
               quantity,
             },
           ]

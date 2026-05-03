@@ -13,6 +13,8 @@ function ImageGallery({ images = [] }) {
               <img
                 src={image}
                 alt="Product"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
                 className="h-[calc(100vh-10rem)] min-h-[520px] w-full object-cover"
               />
             </div>
@@ -33,12 +35,12 @@ function ImageGallery({ images = [] }) {
               }`}
               onClick={() => setActive(index)}
             >
-              <img src={image} alt="" className="h-20 w-20 object-cover sm:h-24 sm:w-24 lg:h-[104px] lg:w-[88px]" />
+              <img src={image} alt="" loading="lazy" decoding="async" className="h-20 w-20 object-cover sm:h-24 sm:w-24 lg:h-[104px] lg:w-[88px]" />
             </button>
           ))}
         </div>
         <div className="order-1 overflow-hidden border-y border-[#DDD2C0] bg-[#F7F0E8] sm:border lg:order-2 lg:border-[#DDD2C0]">
-          <img src={safeImages[active]} alt="Product" className="h-[860px] w-full object-cover" />
+          <img src={safeImages[active]} alt="Product" decoding="async" className="h-[860px] w-full object-cover" />
         </div>
       </div>
     </div>

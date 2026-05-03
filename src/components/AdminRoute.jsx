@@ -5,7 +5,7 @@ function AdminRoute({ children }) {
   const { isAdmin, loading } = useAuth()
 
   if (loading) {
-    return <div className="container-shell py-20 text-center text-[#C9A227]">Checking admin access...</div>
+    return <div className="container-shell py-20 text-center text-muted">Checking admin access...</div>
   }
 
   return isAdmin ? children : <Navigate to="/" replace />

@@ -6,7 +6,7 @@ function PrivateRoute({ children }) {
   const location = useLocation()
 
   if (loading) {
-    return <div className="container-shell py-20 text-center text-[#C9A227]">Loading your account...</div>
+    return <div className="container-shell py-20 text-center text-muted">Loading your account...</div>
   }
 
   return user ? children : <Navigate to="/auth" replace state={{ from: location }} />

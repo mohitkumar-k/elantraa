@@ -24,3 +24,7 @@ export function getDeliveryEstimate(days = 7) {
 export function slugify(value = '') {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
+
+export function normalizeSizeLabel(value = 'Custom') {
+  return String(value || 'Custom').trim().toLowerCase() === 'free size' ? 'Custom' : value || 'Custom'
+}

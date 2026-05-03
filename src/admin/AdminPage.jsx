@@ -29,7 +29,7 @@ const emptyProduct = {
   salePrice: 0,
   coverImage: '',
   images: [],
-  sizes: ['S', 'M', 'L', 'XL', 'XXL', 'Free Size'],
+  sizes: ['S', 'M', 'L', 'XL', 'XXL', 'Custom'],
   fabric: '',
   color: '',
   description: '',

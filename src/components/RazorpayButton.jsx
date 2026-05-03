@@ -41,7 +41,7 @@ function RazorpayButton({ amount, customer, onSuccess, className, children }) {
         email: customer?.email || '',
         contact: customer?.phone || '',
       },
-      theme: { color: '#C9A227' },
+      theme: { color: '#A87916' },
     })
 
     razorpay.open()

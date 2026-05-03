@@ -76,7 +76,7 @@ export const demoProducts = productSeed.map(
         `https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80&sig=${index + 21}`,
         `https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80&sig=${index + 31}`,
       ],
-      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'Free Size'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'Custom'],
       fabric,
       color,
       description:

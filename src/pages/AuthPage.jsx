@@ -25,8 +25,8 @@ function AuthPage() {
       <Seo title="Login" />
       <section className="container-shell page-section">
         <div className="mx-auto max-w-md glass-card p-6 sm:p-8">
-          <h1 className="heading-display text-4xl text-[#A8841F]">{mode === 'login' ? 'Welcome Back' : 'Create Account'}</h1>
-          <p className="mt-3 text-sm text-[#C9A227]">Login with email or continue with Google.</p>
+          <h1 className="heading-display text-4xl text-ink">{mode === 'login' ? 'Welcome Back' : 'Create Account'}</h1>
+          <p className="mt-3 text-sm text-muted">Login with email or continue with Google.</p>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             {mode === 'register' && (
               <input
@@ -34,7 +34,7 @@ function AuthPage() {
                 placeholder="Full Name"
                 value={form.name}
                 onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3 text-[#A8841F]"
+                className="w-full rounded-[16px] border border-line px-4 py-3 text-ink outline-none focus:border-brand"
               />
             )}
             <input
@@ -42,14 +42,14 @@ function AuthPage() {
               placeholder="Email"
               value={form.email}
               onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-              className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3 text-[#A8841F]"
+              className="w-full rounded-[16px] border border-line px-4 py-3 text-ink outline-none focus:border-brand"
             />
             <input
               type="password"
               placeholder="Password"
               value={form.password}
               onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-              className="w-full rounded-[18px] border border-[#E0B84A] px-4 py-3 text-[#A8841F]"
+              className="w-full rounded-[16px] border border-line px-4 py-3 text-ink outline-none focus:border-brand"
             />
             <button type="submit" className="btn-primary w-full">
               {mode === 'login' ? 'LOGIN' : 'REGISTER'}
@@ -60,7 +60,7 @@ function AuthPage() {
           </button>
           <button
             type="button"
-            className="mt-4 w-full text-sm text-[#C9A227]"
+            className="mt-4 w-full text-sm text-muted transition hover:text-brand"
             onClick={() => setMode((current) => (current === 'login' ? 'register' : 'login'))}
           >
             {mode === 'login' ? 'Need an account? Register' : 'Already have an account? Login'}
